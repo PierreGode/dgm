@@ -9,36 +9,10 @@ import openai
 
 MAX_OUTPUT_TOKENS = 4096
 AVAILABLE_LLMS = [
-    # Anthropic models
-    "claude-3-5-sonnet-20240620",
-    "claude-3-5-sonnet-20241022",
-    # OpenAI models
-    "gpt-4o-mini-2024-07-18",
-    "gpt-4o-2024-05-13",
-    "gpt-4o-2024-08-06",
-    "o1-preview-2024-09-12",
-    "o1-mini-2024-09-12",
-    "o1-2024-12-17",
-    "o3-mini-2025-01-31",
-    # OpenRouter models
-    "llama3.1-405b",
-    # Anthropic Claude models via Amazon Bedrock
-    "bedrock/anthropic.claude-3-sonnet-20240229-v1:0",
-    "bedrock/anthropic.claude-3-5-sonnet-20240620-v1:0",
-    "bedrock/anthropic.claude-3-5-sonnet-20241022-v2:0",
-    "bedrock/anthropic.claude-3-haiku-20240307-v1:0",
-    "bedrock/anthropic.claude-3-opus-20240229-v1:0",
-    "bedrock/us.anthropic.claude-3-5-sonnet-20241022-v2:0",
-    # Anthropic Claude models Vertex AI
-    "vertex_ai/claude-3-opus@20240229",
-    "vertex_ai/claude-3-5-sonnet@20240620",
-    "vertex_ai/claude-3-5-sonnet-v2@20241022",
-    "vertex_ai/claude-3-sonnet@20240229",
-    "vertex_ai/claude-3-haiku@20240307",
-    # DeepSeek models
-    "deepseek-chat",
-    "deepseek-coder",
-    "deepseek-reasoner",
+    # Supported models
+    "gpt-4o-mini",
+    "gpt-4.1-mini",
+    "gpt-4.1-nano",
 ]
 
 def create_client(model: str):
@@ -100,9 +74,9 @@ def get_batch_responses_from_llm(
         msg_history = []
 
     if model in [
-        "gpt-4o-2024-05-13",
-        "gpt-4o-mini-2024-07-18",
-        "gpt-4o-2024-08-06",
+        "gpt-4o-mini",
+        "gpt-4.1-mini",
+        "gpt-4.1-nano",
     ]:
         new_msg_history = msg_history + [{"role": "user", "content": msg}]
         response = client.chat.completions.create(
@@ -212,7 +186,7 @@ def get_response_from_llm(
                 ],
             }
         ]
-    elif model.startswith("gpt-4o-"):
+    elif model.startswith("gpt-4o") or model.startswith("gpt-4.1"):
         new_msg_history = msg_history + [{"role": "user", "content": msg}]
         response = client.chat.completions.create(
             model=model,
