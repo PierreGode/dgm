@@ -10,8 +10,9 @@ from llm import create_client, get_response_from_llm
 from prompts.tooluse_prompt import get_tooluse_prompt
 from tools import load_all_tools
 
-CLAUDE_MODEL = 'bedrock/us.anthropic.claude-3-5-sonnet-20241022-v2:0'
-OPENAI_MODEL = 'o3-mini-2025-01-31'
+LOCAL_MODEL = 'local/sshleifer/tiny-gpt2'
+CLAUDE_MODEL = LOCAL_MODEL
+OPENAI_MODEL = LOCAL_MODEL
 
 def process_tool_call(tools_dict, tool_name, tool_input):
     try:
