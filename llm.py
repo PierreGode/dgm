@@ -6,6 +6,7 @@ import re
 import anthropic
 import backoff
 import openai
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 
 MAX_OUTPUT_TOKENS = 4096
 AVAILABLE_LLMS = [
@@ -49,6 +50,13 @@ def create_client(model: str):
             base_url="https://api.deepseek.com"
         )
         return client, model
+    elif model.startswith("local/"):
+        local_name = model.split("/", 1)[1]
+        print(f"Using local model {local_name}.")
+        tokenizer = AutoTokenizer.from_pretrained(local_name)
+        model_obj = AutoModelForCausalLM.from_pretrained(local_name)
+        pipe = pipeline("text-generation", model=model_obj, tokenizer=tokenizer)
+        return pipe, local_name
     elif model == "llama3.1-405b":
         print(f"Using OpenAI API with {model}.")
         client = openai.OpenAI(
@@ -265,6 +273,16 @@ def get_response_from_llm(
         content = response.choices[0].message.content
         new_msg_history = new_msg_history + [{"role": "assistant", "content": content}]
         resoning_content = response.choices[0].message.reasoning_content
+    elif model.startswith("local/"):
+        prompt = system_message + "\n" + "\n".join([
+            f"{m['role']}: {m['content']}" for m in msg_history
+        ]) + f"\nuser: {msg}"
+        outputs = client(prompt, max_new_tokens=MAX_OUTPUT_TOKENS, do_sample=True, temperature=temperature)
+        content = outputs[0]["generated_text"][len(prompt):]
+        new_msg_history = msg_history + [
+            {"role": "user", "content": msg},
+            {"role": "assistant", "content": content}
+        ]
     else:
         raise ValueError(f"Model {model} not supported.")
     if print_debug:

@@ -23,10 +23,13 @@ Repository for **Darwin Gödel Machine (DGM)**, a novel self-improving system th
 
 ## Setup
 ```bash
-# API keys, add to ~/.bashrc
+# (Optional) API keys if using remote models
 export OPENAI_API_KEY='...'
 export ANTHROPIC_API_KEY='...'
 ```
+
+The default configuration runs a small local model from Hugging Face and does
+not require any API keys.
 
 ```bash
 # Verify that Docker is properly configured in your environment.
