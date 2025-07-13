@@ -6,6 +6,7 @@ import re
 import anthropic
 import backoff
 import openai
+import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 
 MAX_OUTPUT_TOKENS = 4096
@@ -55,7 +56,13 @@ def create_client(model: str):
         print(f"Using local model {local_name}.")
         tokenizer = AutoTokenizer.from_pretrained(local_name)
         model_obj = AutoModelForCausalLM.from_pretrained(local_name)
-        pipe = pipeline("text-generation", model=model_obj, tokenizer=tokenizer)
+        device = 0 if torch.cuda.is_available() else -1
+        pipe = pipeline(
+            "text-generation",
+            model=model_obj,
+            tokenizer=tokenizer,
+            device=device,
+        )
         return pipe, local_name
     elif model == "llama3.1-405b":
         print(f"Using OpenAI API with {model}.")
