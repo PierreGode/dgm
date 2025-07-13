@@ -71,6 +71,16 @@ python DGM_outer.py
 ```
 By default, outputs will be saved in the `output_dgm/` directory.
 
+### Running on Raspberry Pi / Jetson Orin Nano
+This repository supports completely offline execution using local Hugging Face models. When running on a Raspberry Pi 5 with a Jetson Orin Nano, ensure that your desired model is downloaded beforehand. The code will automatically use the GPU if it is available.
+
+```python
+device = 0 if torch.cuda.is_available() else -1
+pipeline("text-generation", model=model_obj, tokenizer=tokenizer, device=device)
+```
+
+No network access is required once all dependencies and model weights are installed.
+
 ## File Structure
 - `analysis/` scripts used for plotting and analysis
 - `initial/` SWE-bench logs and performance of the initial agent
